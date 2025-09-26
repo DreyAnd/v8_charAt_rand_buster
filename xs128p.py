@@ -131,6 +131,14 @@ def from_double(dbl):
     return struct.unpack('<Q', struct.pack('d', dbl + 1))[0] & 0x7FFFFFFFFFFFFFFF
 
 
+def number_to_char(number):
+    """
+    Convert a number to its character equivalent using the same charset as gencode.ts
+    """
+    characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    return characters[number % len(characters)]
+
+
 def get_args():
     parser = argparse.ArgumentParser(
         description="Uses Z3 to predict future states for 'Math.floor(MULTIPLE * Math.random())' given some consecutive historical values. Pipe unbucketed points in via STDIN.")
@@ -234,4 +242,6 @@ if __name__ == "__main__":
 
     for _ in range(args.gen):
         state0, state1, output = xs128p(state0, state1)
-        print(math.floor(args.multiple * to_double(output)) + args.add)
+        number = math.floor(args.multiple * to_double(output)) + args.add
+        char = number_to_char(number)
+        print(f"{number} -> {char}")
